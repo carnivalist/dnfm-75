@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNF手游 · 套装散搭抗魔计算器 (2+2+2+2+2+1)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+        body {
+            background: #1a1e2b;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px;
+        }
+        .card {
+            max-width: 1400px;
+            width: 100%;
+            background: #0f1219;
+            border-radius: 32px;
+            padding: 28px 24px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,255,255,0.06);
+            border: 1px solid #2e3545;
+        }
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            color: #edeef2;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        h1 span {
+            background: #2f3e5a;
+            color: #b7cdff;
+            font-size: 0.9rem;
+            font-weight: 400;
+            padding: 4px 14px;
+            border-radius: 40px;
+            border: 1px solid #42648d;
+        }
+        .sub {
+            color: #929bb0;
+            margin-top: 0;
+            margin-bottom: 28px;
+            font-size: 1rem;
+            border-left: 4px solid #3b6eb0;
+            padding-left: 18px;
+            background: linear-gradient(90deg, #1f2638, transparent);
+        }
+        .layout {
+            display: flex;
+            flex-direction: row;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .input-panel {
+            flex: 2;
+            min-width: 640px;
+        }
+        .output-panel {
+            flex: 1.2;
+            min-width: 320px;
+            background: #141a25;
+            border-radius: 24px;
+            padding: 20px 18px;
+            border: 1px solid #2d3649;
+            box-shadow: inset 0 2px 3px #0b0e14;
+        }
+        .table-wrapper {
+            background: #0f1620;
+            border-radius: 24px;
+            border: 1px solid #2a3346;
+            overflow-x: auto;
+            padding: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 900px;
+        }
+        th {
+            background: #1e2638;
+            color: #cbd5e8;
+            font-weight: 500;
+            padding: 14px 6px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border-bottom: 2px solid #364153;
+        }
+        td {
+            padding: 10px 6px;
+            text-align: center;
+            background: #121724;
+            border-bottom: 1px solid #293141;
+            color: #d3daea;
+        }
+        .slot-name {
+            font-weight: 600;
+            color: #dde2f0;
+            background: #1b212f;
+            width: 100px;
+        }
+        .set-badge {
+            background: #232c3f;
+            padding: 5px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #b0c1e6;
+            white-space: nowrap;
+        }
+        select {
+            background: #1e273b;
+            color: white;
+            border: 1px solid #41506b;
+            border-radius: 20px;
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            width: 110px;
+            cursor: pointer;
+            outline: none;
+            transition: 0.2s;
+        }
+        select:hover {
+            border-color: #678ac7;
+            background: #253048;
+        }
+        .star-select {
+            font-weight: 500;
+            background: #1b253b;
+            border-radius: 30px;
+            padding: 5px;
+            border: 1px solid #3e506e;
+        }
+        .star-select option {
+            background: #1b253b;
+        }
+        .calc-btn {
+            background: #3865a0;
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 16px 36px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
+            margin: 28px 0 16px 0;
+            box-shadow: 0 8px 18px #0f1a2e;
+            transition: all 0.15s;
+            cursor: pointer;
+            border: 1px solid #5b89cf;
+        }
+        .calc-btn:hover {
+            background: #457ac2;
+            transform: scale(1.02);
+            border-color: #8bb1f0;
+        }
+        .reset-btn {
+            background: #2d3445;
+            border: 1px solid #535f78;
+            color: #ccd6ec;
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-weight: 500;
+            margin-left: 16px;
+            cursor: pointer;
+        }
+        .reset-btn:hover {
+            background: #3d465e;
+        }
+        .rec-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            color: #d2defc;
+            font-weight: 500;
+        }
+        .rec-box {
+            background: #101622;
+            border-radius: 20px;
+            padding: 16px;
+            margin-top: 12px;
+            border: 1px solid #2f3d57;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .rec-item {
+            background: #1b2333;
+            border-radius: 18px;
+            padding: 18px 16px;
+            margin-bottom: 14px;
+            border-left: 6px solid;
+            box-shadow: 0 6px 10px #070a10;
+            transition: 0.1s;
+        }
+        .rec-item:hover {
+            background: #202汖;
+        }
+        .rec-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #e8edff;
+        }
+        .rec-detail {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px 12px;
+            font-size: 0.83rem;
+            color: #b2c2e6;
+        }
+        .badge-set {
+            background: #2d405b;
+            border-radius: 30px;
+            padding: 3px 12px;
+            color: white;
+            font-size: 0.8rem;
+        }
+        .star-icon {
+            color: #ffd966;
+            margin-left: 4px;
+            font-weight: 600;
+        }
+        .footer-note {
+            font-size: 0.8rem;
+            color: #6d7b9e;
+            margin-top: 16px;
+            text-align: center;
+        }
+        hr {
+            border: 0.5px solid #263040;
+            margin: 16px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>📦 深渊·散搭引擎 <span>2+2+2+2+2+1 最大化抗魔</span></h1>
+    <div class="sub">按部位填入当前星级 (1~6星) ，计算器将穷举所有套装组合，推荐抗魔值最高的6套搭配 (星级越高抗魔越高)</div>
+
+    <div class="layout">
+        <!-- 左侧输入表格 -->
+        <div class="input-panel">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>部位</th>
+                            <th>星辰</th><th>万灵</th><th>永恒</th><th>残夜</th><th>复苏</th><th>冰川</th>
+                            <th>纵横</th><th>凌云</th><th>万世</th><th>天劫</th><th>暗夜</th><th>时光</th>
+                            <th>逝魔</th><th>铁马</th><th>上元</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 使用JS动态生成10个部位 更干净，但也可以硬编码 为了稳定直接生成10行 但套数太多，手写工作量略大，用JS生成减少html冗余 -->
+                    </tbody>
+                </table>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <button class="calc-btn" id="calculateBtn">⚡ 计算最佳散搭 (2+2+2+2+2+1)</button>
+                <button class="reset-btn" id="resetBtn">⟲ 重置所有星级为1</button>
+            </div>
+            <div style="color:#6e7da0; font-size:0.85rem; margin-top:10px; background:#151e2c; padding:10px 16px; border-radius:40px;">
+                ⭐ 星级影响：6星最高，其次5星 …… 1星最低。抗魔公式 = Σ(部位基础抗魔 × 星级系数)。系数(1~6)：1.0, 1.2, 1.4, 1.6, 1.8, 2.0
+            </div>
+        </div>
+
+        <!-- 右侧推荐面板 -->
+        <div class="output-panel">
+            <div class="rec-title">
+                <span>🔥 抗魔最高的搭配 (最多6套)</span>
+                <span style="background:#2b3750; padding:4px 12px; border-radius:40px;">总数 <span id="recCount">0</span>/6</span>
+            </div>
+            <div class="rec-box" id="recommendList">
+                <div style="color:#5d6f94; text-align:center; padding:30px 0;">点击计算，结果将显示在这里</div>
+            </div>
+            <hr>
+            <div style="display: flex; gap: 8px; color:#abb9da; justify-content: space-around; font-size:0.8rem; flex-wrap:wrap;">
+                <span>套装·简称：星/万/永/残/复/冰/纵/凌/世/劫/暗/时/逝/铁/上</span>
+            </div>
+        </div>
+    </div>
+    <div class="footer-note">
+        * 每个套装最多同时出现两次 (2件套效果) ，第六个套装只出现一次 (1件) 。系统枚举所有符合规则的组合。
+    </div>
+</div>
+
+<script>
+(function() {
+    // ---------- 套装列表(15套) ----------
+    const SETS = [
+        "星辰", "万灵", "永恒", "残夜", "复苏", "冰川", 
+        "纵横", "凌云", "万世", "天劫", "暗夜", "时光", 
+        "逝魔", "铁马", "上元"
+    ];
+
+    // 部位列表 (10个)
+    const SLOTS = [
+        "上衣", "下装", "肩甲", "腰带", "鞋子",
+        "项链", "手镯", "戒指", "辅助装备", "魔法石"
+    ];  // 耳环未提及？但题目最后有耳环，不过前面列表无耳环，根据描述“装备的部位有：上衣、下装……耳环” 一共11个部位？
+        // 仔细看：描述写“装备的部位有：上衣、下装、肩甲、腰带、鞋子、项链、手镯、戒指、辅助装备、魔法石，耳环” 共计11个！
+        // 但下方表格只列了10个部位，缺少耳环，必须补上，否则组合不符合2+2+2+2+2+1 (需要11件)
+    const FULL_SLOTS = [
+        "上衣", "下装", "肩甲", "腰带", "鞋子",
+        "项链", "手镯", "戒指", "辅助装备", "魔法石", "耳环"
+    ]; // 一共11个部位
+
+    // 为了方便，界面表格使用11个部位
+    const SLOTS_DISPLAY = FULL_SLOTS;  // 11
+
+    // 星级系数 (1星~6星)  抗魔倍数
+    const STAR_COEF = [1.0, 1.2, 1.4, 1.6, 1.8, 2.0];
+
+    // ---------- 构建表格HTML (11行 x 15列 + 首列) ----------
+    function buildTable() {
+        let html = '';
+        for (let sIdx = 0; sIdx < SLOTS_DISPLAY.length; sIdx++) {
+            const slot = SLOTS_DISPLAY[sIdx];
+            html += '<tr>';
+            html += `<td class="slot-name">${slot}</td>`;
+            for (let setIdx = 0; setIdx < SETS.length; setIdx++) {
+                const setId = `s${sIdx}_set${setIdx}`; // 用于定位
+                html += `<td><select class="star-select" data-slot="${sIdx}" data-set="${setIdx}" id="${setId}">`;
+                for (let star = 1; star <= 6; star++) {
+                    html += `<option value="${star}">${star}星</option>`;
+                }
+                html += '</select></td>';
+            }
+            html += '</tr>';
+        }
+        return html;
+    }
+
+    // 填充表格
+    document.addEventListener('DOMContentLoaded', function() {
+        const tbody = document.querySelector('table tbody');
+        if (tbody) tbody.innerHTML = buildTable();
+
+        // 设置默认全部为1星 (各个select)
+        const selects = document.querySelectorAll('.star-select');
+        selects.forEach(sel => sel.value = '1');
+
+        // 重置按钮
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            selects.forEach(sel => sel.value = '1');
+        });
+    });
+
+    // ---------- 核心计算逻辑 ----------
+    function calculateRecommendations() {
+        // 读取所有星级数据到三维数组: [部位][套装] = 星级 (1~6)
+        const starMatrix = [];
+        for (let slot = 0; slot < SLOTS_DISPLAY.length; slot++) {
+            starMatrix[slot] = [];
+            for (let set = 0; set < SETS.length; set++) {
+                const selectEl = document.getElementById(`s${slot}_set${set}`);
+                if (selectEl) {
+                    starMatrix[slot][set] = parseInt(selectEl.value, 10);
+                } else {
+                    starMatrix[slot][set] = 1; // fallback
+                }
+            }
+        }
+
+        // 套装索引0..14
+        const setCount = SETS.length;
+        const slotCount = SLOTS_DISPLAY.length;  // 11
+
+        // 我们需要选择6个不同的套装 (允许重复? 套装数量较少, 2+2+2+2+2+1 意思是5个套装出现2次, 1个套装出现1次, 正好11件)
+        // 也就是每个套装最多出现2次，总套装种类 = 6种。 从15个套装里选6个套装, 其中一个只穿1件, 其余5个各穿2件。
+        // 同时还要决定哪5个套装穿2件，哪个穿1件，并且分配具体部位使得每个部位都有套装，并且该套装在该部位的星级确定。
+        // 为了性能我们采用递归枚举(剪枝) 或者遍历所有6套装组合再分配部位。
+
+        // 由于15选6 = 5005种, 再决定哪个是单件(6种) 及 分配部位 (11! 复杂度太高) 但我们可以用贪心? 但为了准确找最高抗魔必须精确计算。
+        // 但是部位必须和套装匹配，每个部位有确定的星级（取决于选哪个套装）。所以相当于：从11个部位中，每个部位任选一个套装，使得各套装出现次数为[2,2,2,2,2,1]。
+        // 那就是从11个部位分配套装，每个部位可选15种，但受套装计数约束。
+        // 直接枚举所有部位选择套装是不可能的 (15^11 ≈ 4.3e12) 不可行。
+        // 使用递归+剪枝，配合记忆化可能可行但复杂。另一种思路：先选6个套装（组合），再决定哪件单件，然后分配部位，等效于从这6个套装里给11个部位赋值，使计数符合。
+        // 给定6个套装(含一个特殊单件)，要分配部位使得每个部位属于其中一个套装，且套装计数分别为2,2,2,2,2,1。也就是一个“多集合的排列”。
+        // 我们可以把11个部位看作是11个有序位置，从6个套装中可重复选取，但最终计数必须吻合。我们先生成6个套装的id列表，并生成计数模式（比如前5个2次，最后一个1次）。
+        // 然后遍历所有部位到套装的映射（回溯），把符合条件的抗魔值算出来。 
+        // 6^11 ≈ 3.6亿 如果每个组合都回溯也很慢，但利用计数剪枝会快很多，但用户浏览器可能卡。 采用DP生成所有分配？ 但套装固定情况下可以快速计算最大抗魔？
+        // 但抗魔取决于每个部位上的星级，星级由部位和套装决定，无前后依赖。 所以给定6个套装和单件标识，要使得总抗魔最高，其实就是：每个部位选择6个套装中使得该部位星级最高的那个套装，但不能违反计数约束。
+        // 这变成了一个带数量约束的指派问题，可以用最大权匹配（或DP+贪心），因为数量小(11部位,6套装) ，我们可以用动态规划，状态是每个套装已用件数(0/1/2)，总共最多 3^6=729 状态，乘11部位 ~ 8000 轻松。
+        // 完美！针对每种套装组合及哪个套装单件，跑一次DP，得到该组合下的最大抗魔值。 外层组合数 (C(15,6)*6 = 5005*6 ≈ 30030 种) * DP 8000 ≈ 2.4亿 运算，可能略高但现代浏览器也许能忍 (但用户星级固定，每次计算可能几十毫秒？ 2.4亿次简单操作在JS上可能几秒甚至卡死)。
+        // 为了效率且能展示多套，我们做限制：套装总数少，但我们可以先计算所有组合，并排序取前6。但最多3万种，每个DP 729*11≈8k，大概2.4亿次迭代，每次迭代涉及几次数组读和比较，JS约在1~2秒左右（优化后），勉强可以。 为了流畅，我们增加缓存(相同套装组合不同单件可复用部分)。 
+        // 为简化，先实现，如果太慢可考虑WebWorker，但这里作为展示，可以尝试优化：先枚举6套装组合，对于每个组合的6种单件配置，用DP。
+
+        function computeMaxScoreForCombination(setList, singleIdxInComb) {
+            // setList: 长度为6的数组，元素是套装索引(0~14)
+            // singleIdxInComb: 在setList中哪个是只穿1件的 (该套装最终计数1，其他5个计数2)
+            const countsRequired = Array(6).fill(2);
+            countsRequired[singleIdxInComb] = 1;
+
+            // dp[mask] 表示当前各套装已选数量的编码 (每个套装用0,1,2 需要两位, 总共12位, 可以用整数编码)
+            // 但我们直接用三维数组吧: dp[kit1cnt][kit2cnt]... 但6维难。 用字典映射编码: base3 编码, 状态总数最多 3^6=729
+            // 编码: state 是 base3 数, 第i位表示第i个套装已经使用的件数(0,1,2)
+            const K = setList.length; // 6
+            const totalStates = Math.pow(3, K);
+            // dp 值存储最大抗魔值，初始 -1
+            let dp = new Array(totalStates).fill(-1);
+            dp[0] = 0; // 一件没选
+
+            // 部位逐个考虑
+            for (let slot = 0; slot < slotCount; slot++) {
+                let newDp = new Array(totalStates).fill(-1);
+                // 遍历旧状态
+                for (let state = 0; state < totalStates; state++) {
+                    let curScore = dp[state];
+                    if (curScore < 0) continue;
+
+                    // 解码各套装已用件数
+                    let cnt = Array(K);
+                    let tmp = state;
+                    for (let i = 0; i < K; i++) {
+                        cnt[i] = tmp % 3;
+                        tmp = Math.floor(tmp / 3);
+                    }
+
+                    // 尝试为该部位选择某个套装 (索引j 对应 setList[j])
+                    for (let j = 0; j < K; j++) {
+                        if (cnt[j] >= countsRequired[j]) continue; // 已达上限
+                        // 套装原始索引
+                        const setIdx = setList[j];
+                        // 星级
+                        const star = starMatrix[slot][setIdx];
+                        const addScore = STAR_COEF[star - 1]; // 星级系数, 实际抗魔值 = 基础*系数，但所有部位基础一致，可只比较系数和
+                        // 新状态
+                        let newCnt = cnt.slice();
+                        newCnt[j]++;
+                        let newState = 0;
+                        let mult = 1;
+                        for (let i = 0; i < K; i++) {
+                            newState += newCnt[i] * mult;
+                            mult *= 3;
+                        }
+                        const newScore = curScore + addScore;
+                        if (newScore > newDp[newState]) {
+                            newDp[newState] = newScore;
+                        }
+                    }
+                }
+                dp = newDp;
+            }
+
+            // 最终状态是所有计数恰好填满: 即各套装计数等于countsRequired
+            let finalState = 0;
+            let mult = 1;
+            for (let i = 0; i < K; i++) {
+                finalState += countsRequired[i] * mult;
+                mult *= 3;
+            }
+            const maxScore = dp[finalState];
+            if (maxScore < 0) return null; // 无解(理论上存在)
+
+            // 额外需要回溯出具体每个部位选了什么套装才能显示搭配细节。为了展示前6套，需要具体分配。
+            // 这里暂时只返回分数，后面为了展示我们可能要重新回溯并记录部位选择。但为了简单且满足“推荐多套”，可以在计算分数后对有解的组合储存搭配(最终路径)
+            // 为了不过度复杂，我们在DP同时记录前驱, 从而重建一个具体选择。由于可能存在多个最优，我们只取任意一个达到最大分数的路径。
+            // 但我们需要对每个组合只取最大分数路径展示，且不同组合可能分数相同。最后按分数取前6。
+            // 重新执行一次带路径记录的DP（复用上面逻辑，增加pre数组）
+            // 简便：额外写一个函数获取带路径的版本。
+            function buildPath() {
+                // 重新初始化
+                let dpPath = new Array(totalStates).fill(-1);
+                let preSlot = new Array(totalStates).fill(null); // 存储上个状态
+                let preChoice = new Array(totalStates).fill(null); // 选择的套装索引(相对于setList)
+                dpPath[0] = 0;
+                for (let slot = 0; slot < slotCount; slot++) {
+                    let newDp = new Array(totalStates).fill(-1);
+                    let newPreSlot = new Array(totalStates).fill(null);
+                    let newPreChoice = new Array(totalStates).fill(null);
+                    for (let state = 0; state < totalStates; state++) {
+                        let cur = dpPath[state];
+                        if (cur < 0) continue;
+                        let cnt = Array(K);
+                        let tmp = state;
+                        for (let i = 0; i < K; i++) {
+                            cnt[i] = tmp % 3;
+                            tmp = Math.floor(tmp / 3);
+                        }
+                        for (let j = 0; j < K; j++) {
+                            if (cnt[j] >= countsRequired[j]) continue;
+                            const setIdx = setList[j];
+                            const star = starMatrix[slot][setIdx];
+                            const add = STAR_COEF[star - 1];
+                            let newCnt = cnt.slice();
+                            newCnt[j]++;
+                            let newState = 0;
+                            let mult = 1;
+                            for (let i = 0; i < K; i++) {
+                                newState += newCnt[i] * mult;
+                                mult *= 3;
+                            }
+                            let cand = cur + add;
+                            if (cand > newDp[newState]) {
+                                newDp[newState] = cand;
+                                newPreSlot[newState] = state;
+                                newPreChoice[newState] = j;
+                            }
+                        }
+                    }
+                    dpPath = newDp;
+                    preSlot = newPreSlot;
+                    preChoice = newPreChoice;
+                }
+                // 回溯
+                if (dpPath[finalState] < 0) return null;
+                let path = [];
+                let state = finalState;
+                for (let slot = slotCount - 1; slot >= 0; slot--) {
+                    const choice = preChoice[state]; // 套装索引 (相对于setList)
+                    if (choice === null) return null; // 异常
+                    path.unshift({
+                        slot: slot,
+                        setIdx: setList[choice],   // 原始套装索引
+                    });
+                    state = preSlot[state];
+                }
+                return { score: dpPath[finalState], assignment: path };
+            }
+
+            return buildPath();
+        }
+
+        // 枚举所有6套装组合 (从15个里选6个)
+        const allCombinations = [];
+        function combine(start, current) {
+            if (current.length === 6) {
+                allCombinations.push([...current]);
+                return;
+            }
+            for (let i = start; i < setCount; i++) {
+                current.push(i);
+                combine(i + 1, current);
+                current.pop();
+            }
+        }
+        combine(0, []);
+
+        let results = [];
+
+        // 遍历每个组合及单件位置
+        for (let comb of allCombinations) {
+            for (let singlePos = 0; singlePos < 6; singlePos++) {
+                const pathData = computeMaxScoreForCombination(comb, singlePos);
+                if (pathData) {
+                    // 构造可读描述
+                    const setNamesInComb = comb.map(idx => SETS[idx]);
+                    // 构建每个部位的具体套装
+                    let slotSetMap = Array(slotCount);
+                    for (let ass of pathData.assignment) {
+                        slotSetMap[ass.slot] = ass.setIdx;
+                    }
+                    // 计算每个套装出现次数校验
+                    let countMap = new Array(15).fill(0);
+                    for (let setIdx of slotSetMap) countMap[setIdx]++;
+
+                    results.push({
+                        score: pathData.score,
+                        sets: comb.slice(), // 原始索引
+                        singlePos: singlePos,
+                        assignment: slotSetMap, // 长度为11, 每元素为套装索引
+                        setNames: setNamesInComb,
+                        singleSetName: SETS[comb[singlePos]],
+                        detailStr: slotSetMap.map((set, idx) => `${SLOTS_DISPLAY[idx]}:${SETS[set]}`).join(', ')
+                    });
+                }
+            }
+        }
+
+        // 排序取前6高分
+        results.sort((a, b) => b.score - a.score);
+        const top6 = results.slice(0, 6);
+
+        // 渲染到推荐列表
+        const recDiv = document.getElementById('recommendList');
+        const recCountSpan = document.getElementById('recCount');
+        recCountSpan.innerText = top6.length;
+
+        if (top6.length === 0) {
+            recDiv.innerHTML = '<div style="color:#5d6f94; text-align:center; padding:30px 0;">无法形成2+2+2+2+2+1搭配，请检查星级数据</div>';
+            return;
+        }
+
+        let htmlStr = '';
+        for (let i = 0; i < top6.length; i++) {
+            const r = top6[i];
+            // 收集每个套装出现部位
+            let setItems = {};
+            for (let s = 0; s < SETS.length; s++) setItems[s] = [];
+            for (let slot = 0; slot < slotCount; slot++) {
+                const setIdx = r.assignment[slot];
+                setItems[setIdx].push(SLOTS_DISPLAY[slot]);
+            }
+            // 找出哪个套装只有1件 (即r.singleSetName)
+            const singleSet = r.singleSetName;
+            htmlStr += `<div class="rec-item" style="border-left-color: #${(i*100+0x6b9).toString(16).slice(0,6)};">`;
+            htmlStr += `<div class="rec-header"><span>⚔️ 组合 #${i+1}</span> <span style="background:#314a6b; padding:6px 18px; border-radius:60px;">⭐ 抗魔系数 ${r.score.toFixed(2)}</span></div>`;
+
+            for (let [setIdx, slots] of Object.entries(setItems)) {
+                if (slots.length === 0) continue;
+                const setIndex = parseInt(setIdx);
+                const setName = SETS[setIndex];
+                // 标记单件
+                const isSingle = (setName === singleSet && slots.length === 1);
+                const starInfo = slots.map(slot => {
+                    const star = starMatrix[FULL_SLOTS.indexOf(slot)][setIndex];
+                    return `${slot} ${star}星`;
+                }).join(' · ');
+                htmlStr += `<div style="margin-bottom: 8px; background:#1b2539; border-radius: 16px; padding: 8px 12px;">`;
+                htmlStr += `<span class="badge-set" style="background:${isSingle?'#854d30':'#2d4a70'};">${setName} ${isSingle?'①':'②'}</span> `;
+                htmlStr += `<span style="color:#cddbfa; font-size:0.85rem;">${starInfo}</span>`;
+                htmlStr += `</div>`;
+            }
+            // 额外显示总部位确认
+            htmlStr += `<div style="text-align:right; color:#7a89b2; font-size:0.7rem;">部位数: 11/11</div>`;
+            htmlStr += `</div>`;
+        }
+        recDiv.innerHTML = htmlStr;
+    }
+
+    // 绑定计算按钮
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('calculateBtn');
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            calculateRecommendations();
+        });
+    });
+
+})();
+</script>
+<!-- 注：耳环已加入，共计11部位，完全符合描述 -->
+</body>
+</html>
